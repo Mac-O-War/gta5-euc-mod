@@ -189,8 +189,10 @@ changes back afterwards.
 1. Delete `EucMod.dll` and `EucMod.ini` from `<GTA V folder>\scripts\`.
 2. Delete the folder `<GTA V folder>\mods\update\x64\dlcpacks\eucmod`.
 
-That's enough to stop the mod from loading. A leftover entry for it in the game's DLC list is
-harmless.
+That stops the mod from loading. The installer also added one line to the game's DLC list
+(in the mods folder). To remove that too, open OpenIV, turn on **Edit mode**, open
+**update → update.rpf → common → data → dlclist.xml** (Right-click → Edit), delete the line
+`<Item>dlcpacks:/eucmod/</Item>` and save.
 
 To remove *all* mods, also delete the `mods` folder, `ScriptHookV.dll`, `dinput8.dll`,
 `OpenIV.asi` and the `ScriptHookVDotNet*` files.
