@@ -40,8 +40,12 @@ if (-not $SkipModel) {
     $modsPack = Join-Path $GtaDir 'mods\update\x64\dlcpacks\eucmod'
     if (Test-Path (Join-Path $GtaDir 'mods')) {
         New-Item -ItemType Directory -Force $modsPack | Out-Null
-        Copy-Item -Force $dlc $modsPack
-        Write-Host "Deployed dlc.rpf to $modsPack" -ForegroundColor Green
+        try {
+            Copy-Item -Force $dlc $modsPack
+            Write-Host "Deployed dlc.rpf to $modsPack" -ForegroundColor Green
+        } catch {
+            Write-Warning "Could not copy dlc.rpf (is GTA V running? it locks the pack). Close the game and run .\build.ps1 again."
+        }
     } else {
         Write-Warning "No mods folder in $GtaDir - set up OpenIV's mods folder first (see README). dlc.rpf is in build\dlc."
     }

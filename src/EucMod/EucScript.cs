@@ -40,9 +40,10 @@ namespace EucMod
         readonly TextElement hud;
         readonly EucRadio radio;
         readonly RiderAnimator animator;
+        readonly EucLights lights;
 
         State state = State.None;
-        Prop root, visual;
+        Prop root, visual, wheel;
 
         Vector3 pos;            // ground contact point under the axle
         Vector3 fwd = new Vector3(0, 1, 0);
@@ -54,6 +55,8 @@ namespace EucMod
         float lastAccel;
         float battery = 1f;
         float overleanTimer, beepTimer;
+        float wheelSpin;        // degrees, accumulated from distance rolled
+        bool brakeLight;
         float landing;          // 0..1 landing-squat impulse, decays after touchdown
         float pitch, roll;      // smoothed rider lean (applied to the anchor the rider is attached to)
         float wheelRoll;        // smoothed wheel lean (differs from the rider's in slow turns)
@@ -66,6 +69,7 @@ namespace EucMod
             hud = new TextElement("", new PointF(1265f, 625f), 0.55f, Color.White, GTA.UI.Font.ChaletLondon, Alignment.Right, true, true);
             radio = new EucRadio(cfg, Log);
             animator = new RiderAnimator(cfg, Log);
+            lights = new EucLights(cfg);
             Tick += OnTick;
             KeyDown += OnKeyDown;
             Aborted += OnAborted;
@@ -84,6 +88,12 @@ namespace EucMod
                     if (state == State.None) Spawn();
                     else Despawn();
                 });
+                return;
+            }
+
+            if (e.KeyCode == cfg.LightsKey && state != State.None)
+            {
+                Guard("lights", () => lights.CycleMode());
                 return;
             }
 
@@ -179,7 +189,16 @@ namespace EucMod
                 visual.IsPositionFrozen = true;
                 visual.IsCollisionEnabled = false;
                 root.IsVisible = false;
-                visualLift = GroundLift(visual.Model, visualRotation);
+                wheel = string.IsNullOrEmpty(cfg.WheelModel) ? null : CreateProp(cfg.WheelModel, ped.Position);
+                if (wheel != null)
+                {
+                    wheel.IsCollisionEnabled = false;
+                    visualLift = 0f;  // body+wheel models are authored with the origin at the ground contact
+                }
+                else
+                {
+                    visualLift = GroundLift(visual.Model, visualRotation);
+                }
             }
             else
             {
@@ -201,6 +220,7 @@ namespace EucMod
         void Despawn()
         {
             radio.Stop();
+            if (wheel != null && wheel.Exists()) wheel.Delete();
             if (visual != null && visual.Exists()) visual.Delete();
             if (root != null && root.Exists()) root.Delete();
             ResetState();
@@ -208,7 +228,7 @@ namespace EucMod
 
         void ResetState()
         {
-            root = visual = null;
+            root = visual = wheel = null;
             state = State.None;
         }
 
@@ -227,6 +247,7 @@ namespace EucMod
         void TickParked(Ped ped, float dt)
         {
             battery = Math.Min(1f, battery + cfg.ParkedChargePerSecond * dt);
+            lights.Draw(visual ?? root, fwd, false);
             if (ped.IsDead || ped.IsInVehicle() || ped.Position.DistanceTo(pos) > MountRange) return;
 
             Game.DisableControlThisFrame(Control.Enter);
@@ -390,6 +411,11 @@ namespace EucMod
             landing = Math.Max(0f, landing - dt * 2.5f);
             animator.Update(ped, dt, balanceLean / cfg.CarveFullLeanDeg, Math.Max(braking, landing), airborne);
 
+            // --- wheel spin (rolling without slip; forward roll is a negative rotation about the axle) + lights
+            wheelSpin = WrapDeg(wheelSpin - cfg.WheelSpinSign * speed / cfg.WheelRollRadius * dt / Deg2Rad);
+            brakeLight = speed > 0.3f && accel < -0.5f;
+            lights.Draw(visual ?? root, fwd, brakeLight);
+
             // --- feedback
             if (tiltback)
             {
@@ -489,6 +515,10 @@ namespace EucMod
                 var vr = visualRotation;
                 Function.Call(Hash.SET_ENTITY_COORDS_NO_OFFSET, visual, vp.X, vp.Y, vp.Z, false, false, false);
                 Function.Call(Hash.SET_ENTITY_ROTATION, visual, pitchDeg + vr.X, wr + vr.Y, headingDeg + vr.Z, 2, true);
+
+                if (wheel != null && wheel.Exists())
+                    Function.Call(Hash.ATTACH_ENTITY_TO_ENTITY, wheel, visual, 0, 0f, 0f, cfg.WheelAxleHeight,
+                        wheelSpin, 0f, 0f, false, false, false, false, 2, true);
             }
         }
 

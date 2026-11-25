@@ -25,6 +25,19 @@ namespace EucMod
         public string RootModel = "prop_roadcone02a";           // invisible anchor the rider and visual attach to
         public string[] VisualModels = { "euc_offroad", "prop_rub_tyre_01" };  // first one that exists is used
         public Vector3 VisualOffset = Vector3.Zero;
+        public string WheelModel = "euc_offroad_wheel";          // spinning wheel prop (only with the real body model)
+        public float WheelAxleHeight = 0.26f;                     // m above the ground contact
+        public float WheelRollRadius = 0.27f;                     // m, sets spin speed
+        public float WheelSpinSign = 1f;                          // flip to -1 if the wheel spins backwards
+
+        // [Lights]
+        public System.Windows.Forms.Keys LightsKey = System.Windows.Forms.Keys.L;
+        public Vector3 HeadlightOffset = new Vector3(0f, 0.24f, 0.56f);   // x right, y forward, z up (m)
+        public Vector3 TaillightOffset = new Vector3(0f, -0.27f, 0.55f);
+        public float HeadlightRange = 30f;
+        public float HeadlightBrightness = 8f;
+        public float HeadlightConeDeg = 30f;
+        public float HeadlightDroop = 0.12f;                      // aim the beam down at the road
         // [ModelRotations] per-model pitch, roll, yaw fix-ups in degrees (built-in placeholders face odd ways)
         readonly System.Collections.Generic.Dictionary<string, Vector3> modelRotations =
             new System.Collections.Generic.Dictionary<string, Vector3>(StringComparer.OrdinalIgnoreCase)
@@ -92,6 +105,19 @@ namespace EucMod
                     .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries),
                 m => m.Trim());
             c.VisualOffset = V3(s, "Model", "VisualOffset", c.VisualOffset);
+            c.WheelModel = s.GetValue("Model", "WheelModel", c.WheelModel).Trim();
+            c.WheelAxleHeight = F(s, "Model", "WheelAxleHeight", c.WheelAxleHeight);
+            c.WheelRollRadius = Math.Max(0.05f, F(s, "Model", "WheelRollRadius", c.WheelRollRadius));
+            c.WheelSpinSign = F(s, "Model", "WheelSpinSign", c.WheelSpinSign);
+
+            c.LightsKey = Key(s, "Lights", "ToggleKey", c.LightsKey);
+            c.HeadlightOffset = V3(s, "Lights", "HeadlightOffset", c.HeadlightOffset);
+            c.TaillightOffset = V3(s, "Lights", "TaillightOffset", c.TaillightOffset);
+            c.HeadlightRange = F(s, "Lights", "HeadlightRange", c.HeadlightRange);
+            c.HeadlightBrightness = F(s, "Lights", "HeadlightBrightness", c.HeadlightBrightness);
+            c.HeadlightConeDeg = F(s, "Lights", "HeadlightConeDeg", c.HeadlightConeDeg);
+            c.HeadlightDroop = F(s, "Lights", "HeadlightDroop", c.HeadlightDroop);
+
             foreach (var m in c.VisualModels)
                 c.modelRotations[m] = V3(s, "ModelRotations", m, c.RotationFor(m));
 
