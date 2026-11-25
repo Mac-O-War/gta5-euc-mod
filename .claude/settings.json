@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:/code/gta5_euc/tools/hooks/sync-ini.ps1\"",
+            "timeout": 120,
+            "statusMessage": "Checking EucMod.ini..."
+          }
+        ]
+      }
+    ]
+  }
+}

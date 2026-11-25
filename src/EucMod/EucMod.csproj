@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>EucMod</AssemblyName>
+    <RootNamespace>EucMod</RootNamespace>
+    <PlatformTarget>x64</PlatformTarget>
+    <!-- Override with: dotnet build -p:GtaDir="D:\Games\GTAV" -->
+    <GtaDir Condition="'$(GtaDir)' == ''">C:\Program Files\Rockstar Games\Grand Theft Auto V Legacy</GtaDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <!-- SHVDN is supplied by the game install; compile against it but never ship it. -->
+    <PackageReference Include="ScriptHookVDotNet3" Version="3.6.0" ExcludeAssets="runtime" PrivateAssets="all" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="EucMod.ini" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Copy the built script into GTA V\scripts so SHVDN picks it up (reload in-game with Insert). -->
+  <Target Name="DeployToGame" AfterTargets="Build">
+    <Warning Condition="!Exists('$(GtaDir)\scripts')" Text="GTA scripts folder not found at '$(GtaDir)\scripts' - skipping deploy." />
+    <Copy Condition="Exists('$(GtaDir)\scripts')" SourceFiles="$(TargetPath);$(TargetDir)EucMod.ini" DestinationFolder="$(GtaDir)\scripts" ContinueOnError="WarnAndContinue" />
+    <Message Condition="Exists('$(GtaDir)\scripts')" Importance="high" Text="Deployed EucMod to $(GtaDir)\scripts" />
+  </Target>
+</Project>

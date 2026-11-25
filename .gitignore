@@ -1,0 +1,11 @@
+bin/
+obj/
+*.blend1
+.vs/
+tools/blender_user/
+tools/downloads/
+build/
+assets/reference/video/
+assets/game_extract/
+__pycache__/
+*.pyc

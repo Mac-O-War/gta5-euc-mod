@@ -1,0 +1,10 @@
+* text=auto
+*.blend binary
+*.glb binary
+*.webp binary
+*.png binary
+*.dds binary
+*.ydr binary
+*.ytyp binary
+*.ycd binary
+*.rpf binary
