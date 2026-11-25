@@ -1,8 +1,11 @@
 # Full build: Blender model -> GTA assets -> dlc.rpf -> deploy, plus the C# script.
 #   .\build.ps1              everything
 #   .\build.ps1 -SkipModel   only the C# script
+#   .\build.ps1 -Package     also make the player release (build\release\EucMod-<version>.zip with EucMod.oiv)
 param(
     [switch]$SkipModel,
+    [switch]$Package,
+    [string]$Version = '1.0',
     [string]$GtaDir = 'C:\Program Files\Rockstar Games\Grand Theft Auto V Legacy',
     [string]$Blender = 'C:\Program Files\Blender Foundation\Blender 4.3\blender.exe'
 )
@@ -54,3 +57,13 @@ if (-not $SkipModel) {
 Write-Host '== Building script' -ForegroundColor Cyan
 dotnet build (Join-Path $root 'src\EucMod') -c Release --nologo -v q
 if ($LASTEXITCODE -ne 0) { throw 'Script build failed' }
+
+if ($Package) {
+    Write-Host '== Packaging player release' -ForegroundColor Cyan
+    $dlc = Join-Path $root 'build\dlc\eucmod\dlc.rpf'
+    if (-not (Test-Path $dlc)) { throw 'No dlc.rpf yet - run without -SkipModel first' }
+    $scriptOut = Join-Path $root 'src\EucMod\bin\Release\net48'
+    python (Join-Path $root 'tools\build_oiv.py') $dlc (Join-Path $scriptOut 'EucMod.dll') (Join-Path $scriptOut 'EucMod.ini') `
+        (Join-Path $root 'INSTALL.md') (Join-Path $root 'assets\package\icon.png') (Join-Path $root 'build\release') $Version
+    if ($LASTEXITCODE -ne 0) { throw 'Packaging failed' }
+}

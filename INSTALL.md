@@ -1,7 +1,8 @@
 # How to install the EUC mod (electric unicycle for GTA V)
 
 Ride an electric unicycle around Los Santos. This guide is for players: no coding needed.
-It takes about 20–30 minutes the first time.
+It takes about 15 minutes the first time, mostly installing the three standard modding tools
+that most GTA V mods need anyway.
 
 > **Story Mode only.** Never go into GTA Online with mods installed. You can get banned.
 > The mod tools used here switch themselves off in Online, but don't take the risk.
@@ -12,25 +13,24 @@ It takes about 20–30 minutes the first time.
 
 - **GTA V Legacy for PC** (Steam, Epic or Rockstar Launcher).
   The mod was tested on game version 1.0.3889. It has not been tested on **GTA V Enhanced**.
-- The **EUC mod files**:
-  - `EucMod.dll`
-  - `EucMod.ini`
-  - `dlc.rpf`
-- About 2 GB of free disk space. OpenIV makes a backup copy of one game file.
+- The mod download **`EucMod-1.0.zip`**. Unzip it somewhere easy, like your Desktop. Inside you'll find:
+  - `EucMod.oiv`: the unicycle model and animations (installed with OpenIV)
+  - `scripts\`: a folder with `EucMod.dll` and `EucMod.ini` (the mod itself)
+  - `INSTALL.md`: this guide
 
-You'll also download three free tools in the steps below:
+You'll also need three free tools. If you've used other GTA V mods before, you probably have them already:
 
 | Tool | What it does |
 |---|---|
 | **Script Hook V** | Lets the game run mods |
 | **Script Hook V .NET** | Lets the game run mods written in C#, like this one |
-| **OpenIV** | Lets the game load new 3D models, like the unicycle |
+| **OpenIV** | Installs the unicycle's 3D model and animations |
 
 ---
 
 ## Step 1: Find your GTA V folder
 
-You'll copy files into this folder several times, so find it first. Common places:
+You'll copy files into this folder, so find it first. Common places:
 
 - Rockstar Launcher: `C:\Program Files\Rockstar Games\Grand Theft Auto V Legacy`
 - Steam: `C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V`
@@ -45,6 +45,8 @@ You've found the right folder when you can see **`GTA5.exe`** in it.
 
 ## Step 2: Install Script Hook V
 
+*(Skip if you already have it.)*
+
 1. Go to **dev-c.com/gtav/scripthookv** and download the latest version.
    Check that it supports your game version. The site lists the supported versions.
 2. Open the zip, go into its **`bin`** folder, and copy these two files into your GTA V folder:
@@ -56,7 +58,7 @@ You've found the right folder when you can see **`GTA5.exe`** in it.
 ## Step 3: Install Script Hook V .NET (nightly version)
 
 > ⚠️ **Important:** The "stable" release from 2022 **crashes** on current versions of the game.
-> You need the **nightly** version.
+> You need the **nightly** version, even if you already have Script Hook V .NET installed.
 
 1. Go to **github.com/scripthookvdotnet/scripthookvdotnet-nightly/releases**.
 2. Download the newest `ScriptHookVDotNet-v3.7.0-nightly.___.zip`.
@@ -68,74 +70,38 @@ You've found the right folder when you can see **`GTA5.exe`** in it.
    - `ScriptHookVDotNet.ini`
 4. If you have an old file called **`ScriptHookVDotNet.asi`** (without "-Loader") in your GTA V
    folder from an older install, **delete it**.
-5. Create a new folder called **`scripts`** inside your GTA V folder, unless one already exists.
 
 ---
 
-## Step 4: Install OpenIV and set up the "mods" folder
+## Step 4: Install OpenIV
 
-The unicycle's 3D model and animations are a small add-on pack. OpenIV lets the game load it
-without changing your original game files.
+*(Skip if you already have OpenIV with OpenIV.ASI installed.)*
 
 1. Download OpenIV from **openiv.com** and install it.
 2. Start OpenIV, choose **GTA V → Windows**, and point it at your GTA V folder.
 3. In OpenIV's menu, open **Tools → ASI Manager** and click **Install** next to **OpenIV.ASI**.
    If it also offers to install the **ASI Loader**, install that too.
 
-### Tell the game about the unicycle pack
-
-4. Click the **Edit mode** button at the top of OpenIV. When it warns you, click **Yes**.
-5. In the file list, open: **update → update.rpf → common → data**.
-6. Right-click **`dlclist.xml`** and choose **Edit**.
-7. OpenIV will ask to copy `update.rpf` to the **mods** folder. Click **Copy to "mods" folder**.
-   It's a big file, so wait for it to finish.
-8. A text editor opens. Scroll to the **very bottom**. Just **above** the line `</Paths>`, add this line:
-
-   ```
-   <Item>dlcpacks:/eucmod/</Item>
-   ```
-
-   The end of the file should now look like this:
-
-   ```
-   		<Item>dlcpacks:/patch2026_01/</Item>
-   		<Item>dlcpacks:/eucmod/</Item>
-   	</Paths>
-   </SMandatoryPacksData>
-   ```
-
-   > ⚠️ The line must be **inside** `<Paths> … </Paths>`. If you put it near the top of the
-   > file, the game will ignore it and you'll get a tire instead of a unicycle.
-
-9. Click **Save** and close the editor.
-
 ---
 
-## Step 5: Copy in the EUC mod files
+## Step 5: Install the EUC mod
 
-1. Copy **`EucMod.dll`** and **`EucMod.ini`** into the **`scripts`** folder inside your GTA V folder.
-2. In your GTA V folder, create these folders: **`mods\update\x64\dlcpacks\eucmod`**.
-   The `mods` and `update` folders may already exist from Step 4.
-3. Copy **`dlc.rpf`** into that new **`eucmod`** folder.
+**A. The unicycle model** (the `.oiv` file)
 
-When you're done, your GTA V folder should contain:
+1. **Double-click `EucMod.oiv`.** OpenIV's Package Installer opens.
+   If double-clicking doesn't open it, start OpenIV and use **Tools → Package Installer**,
+   then pick `EucMod.oiv`.
+2. Click **Install**.
+3. When it asks where to install, choose the **"mods" folder**. Never choose to install into the game folder.
+4. Wait for **"Installation complete"**. The first time, OpenIV copies a large game file into
+   the mods folder, so it can take a minute.
 
-```
-GTA5.exe
-ScriptHookV.dll
-dinput8.dll
-OpenIV.asi
-ScriptHookVDotNet-Loader.asi
-ScriptHookVDotNet.dll  (+ ScriptHookVDotNet2.dll, ScriptHookVDotNet3.dll, ScriptHookVDotNet.ini)
-scripts\
-    EucMod.dll
-    EucMod.ini
-mods\
-    update\
-        update.rpf
-        x64\dlcpacks\eucmod\
-            dlc.rpf
-```
+**B. The script** (the `scripts` folder)
+
+5. Copy the **`scripts`** folder from the download into your **GTA V folder**.
+   If Windows says a `scripts` folder already exists, choose to **merge** it.
+
+When you're done, you should have `EucMod.dll` and `EucMod.ini` inside `<your GTA V folder>\scripts\`.
 
 ---
 
@@ -186,7 +152,7 @@ Save the file, then restart the game to apply your changes.
 
 **Nothing happens when I press F7**
 - Make sure you're in Story Mode, in control of your character, and not in a cutscene.
-- Check that `EucMod.dll` is in the `scripts` folder.
+- Check that `EucMod.dll` is in `<GTA V folder>\scripts\` (Step 5B).
 - Check that all the Script Hook V .NET files from Step 3 are in the GTA V folder, and that you
   used the **nightly** version.
 - Look for **`ScriptHookVDotNet.log`** in your GTA V folder. Errors are listed there.
@@ -196,11 +162,10 @@ Save the file, then restart the game to apply your changes.
   **nightly** version (Step 3) and delete the old `ScriptHookVDotNet.asi`.
 
 **I get a tire (or a traffic cone) instead of a unicycle**
-- The unicycle pack isn't loading. Check that:
-  - `dlc.rpf` is at `mods\update\x64\dlcpacks\eucmod\dlc.rpf` (spelling matters)
-  - the `dlcpacks:/eucmod/` line is **inside** `<Paths>` in `dlclist.xml` (Step 4)
-  - **OpenIV.ASI** is installed (Step 4, point 3)
-- Restart the game after fixing it. The pack only loads at startup.
+- The unicycle model isn't loading. Check that:
+  - you installed `EucMod.oiv` into the **mods** folder (Step 5A). Run it again if unsure.
+  - **OpenIV.ASI** is installed (Step 4, point 3).
+- Restart the game after fixing it. The model only loads at startup.
 
 **Mods stopped working after a GTA V update**
 - Game updates break Script Hook V until its author releases an update. Check dev-c.com for a new
@@ -211,14 +176,21 @@ Save the file, then restart the game to apply your changes.
 
 ---
 
+## Updating to a new version
+
+Install the new `EucMod.oiv` the same way (Step 5A), then copy the new `scripts` folder over the
+old one (Step 5B). If you changed settings in `EucMod.ini`, back it up first and copy your
+changes back afterwards.
+
+---
+
 ## Uninstalling
 
-Delete these and the game is back to normal:
+1. Delete `EucMod.dll` and `EucMod.ini` from `<GTA V folder>\scripts\`.
+2. Delete the folder `<GTA V folder>\mods\update\x64\dlcpacks\eucmod`.
 
-- `scripts\EucMod.dll` and `scripts\EucMod.ini`
-- the `mods\update\x64\dlcpacks\eucmod` folder
-- the `<Item>dlcpacks:/eucmod/</Item>` line in `mods\update\update.rpf → common\data\dlclist.xml`
-  (edit it with OpenIV the same way as Step 4)
+That's enough to stop the mod from loading. A leftover entry for it in the game's DLC list is
+harmless.
 
 To remove *all* mods, also delete the `mods` folder, `ScriptHookV.dll`, `dinput8.dll`,
 `OpenIV.asi` and the `ScriptHookVDotNet*` files.
